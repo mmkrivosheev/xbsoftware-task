@@ -23,7 +23,8 @@ class TagsWidget {
         const tagsCollection = [];
 
         for (let item of tagsArray)
-            tagsCollection.push({id: this.constructor.randomNumber(), value: item});
+            if (typeof item === "string" && item.length < 20)
+                tagsCollection.push({id: this.constructor.randomNumber(), value: item});
 
         this.#tagsCollection = tagsCollection;
         this.#addTagsCollectionToLocalStorage();
