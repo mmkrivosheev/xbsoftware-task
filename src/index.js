@@ -9,6 +9,3 @@ tagsWidget.renderWidget();
 // tagsWidget.setIsReadOnly(true);
 // tagsWidget.addOneTag("Четыре");
 // tagsWidget.deleteOneTag(вставьте id тега);
-
-
-

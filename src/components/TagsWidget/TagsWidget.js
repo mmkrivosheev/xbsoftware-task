@@ -1,16 +1,19 @@
 import "./TagsWidget.css";
 
 class TagsWidget {
+    #tagsCollection;
+    #isReadOnly;
+
     constructor(id) {
         this.id = id;
-        this._tagsCollection = this.#getTagsCollectionFromLocalStorage() || [];
-        this._isReadOnly = this.#getIsReadOnlyFromLocalStorage() ?? false;
+        this.#tagsCollection = this.#getTagsCollectionFromLocalStorage() || [];
+        this.#isReadOnly = this.#getIsReadOnlyFromLocalStorage() ?? false;
     }
 
     get tagsCollection() {
         const tagsArray = [];
 
-        for (let item of this._tagsCollection)
+        for (let item of this.#tagsCollection)
             tagsArray.push(item.value);
 
         return tagsArray;
@@ -22,7 +25,7 @@ class TagsWidget {
         for (let item of tagsArray)
             tagsCollection.push({id: this.constructor.randomNumber(), value: item});
 
-        this._tagsCollection = tagsCollection;
+        this.#tagsCollection = tagsCollection;
         this.#addTagsCollectionToLocalStorage();
         this.#renderTagsCollection();
     }
@@ -37,26 +40,26 @@ class TagsWidget {
                 input.disabled = true;
                 input.classList.add("tags-widget__input--disabled");
                 toggle.checked = true;
-                this._isReadOnly = true;
+                this.#isReadOnly = true;
                 this.#addIsReadOnlyToLocalStorage();
                 break;
             case false:
                 input.disabled = false;
                 input.classList.remove("tags-widget__input--disabled");
                 toggle.checked = false;
-                this._isReadOnly = false;
+                this.#isReadOnly = false;
                 this.#addIsReadOnlyToLocalStorage();
                 break;
         }
     }
 
     #addTagsCollectionToLocalStorage() {
-        const json = JSON.stringify(this._tagsCollection);
+        const json = JSON.stringify(this.#tagsCollection);
         localStorage.setItem(this.id + "-tags-collection", json);
     }
 
     #addIsReadOnlyToLocalStorage() {
-        localStorage.setItem(this.id + "-is-read-only", this._isReadOnly);
+        localStorage.setItem(this.id + "-is-read-only", this.#isReadOnly);
     }
 
     #getTagsCollectionFromLocalStorage() {
@@ -70,14 +73,14 @@ class TagsWidget {
     }
 
     addOneTag(tag) {
-        this._tagsCollection.push({id: this.constructor.randomNumber(), value: tag});
+        this.#tagsCollection.push({id: this.constructor.randomNumber(), value: tag});
         this.#addTagsCollectionToLocalStorage();
         this.#renderTagsCollection();
     }
 
     deleteOneTag(tagId) {
-        if (!this._isReadOnly) {
-            this._tagsCollection = this._tagsCollection.filter(item => item.id !== +tagId);
+        if (!this.#isReadOnly) {
+            this.#tagsCollection = this.#tagsCollection.filter(item => item.id !== +tagId);
             this.#addTagsCollectionToLocalStorage();
             this.#renderTagsCollection();
         }
@@ -112,7 +115,7 @@ class TagsWidget {
         const toggle = document.querySelector(`#${this.id} .tags-widget__toggle`);
         const form = document.querySelector(`#${this.id} .tags-widget__form`);
 
-        if (this._isReadOnly) {
+        if (this.#isReadOnly) {
             toggle.checked = true;
             input.disabled = true;
             input.classList.add("tags-widget__input--disabled");
@@ -135,12 +138,12 @@ class TagsWidget {
             const value = this.constructor.checkInputData(input.value);
             e.preventDefault();
 
-            if (value && value.length < 20 && !this._isReadOnly) {
+            if (value && value.length < 20 && !this.#isReadOnly) {
                 input.value = "";
                 this.addOneTag(value);
                 this.#renderTagsCollection(value);
             } else {
-                if (!this._isReadOnly) {
+                if (!this.#isReadOnly) {
                     input.classList.add("tags-widget__input--error");
                     setTimeout(() => input.classList.remove("tags-widget__input--error"), 200);
                 }
@@ -154,7 +157,7 @@ class TagsWidget {
         const tagsField = document.querySelector(`#${this.id} .tags-widget__tags-field`);
         let items = "";
 
-        for (let item of this._tagsCollection) {
+        for (let item of this.#tagsCollection) {
             items += `
                 <div class="tags-widget__tag">
                     <span>${item.value}</span>
